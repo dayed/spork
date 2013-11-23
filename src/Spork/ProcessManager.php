@@ -143,6 +143,8 @@ class ProcessManager
 
             exit($status);
         }
+        
+        $this->dispatcher->dispatch(Events::POST_FORK_PARENT);
 
         // connect to the fifo
         $fifo = new Fifo($pid);
