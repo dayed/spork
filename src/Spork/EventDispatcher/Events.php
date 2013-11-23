@@ -22,4 +22,9 @@ final class Events
      * Notifies in the child process after forking.
      */
     const POST_FORK = 'spork.post_fork';
+    
+    /**
+     * Notifies in the child process after forking.
+     */
+    const POST_FORK_PARENT = 'spork.post_fork_parent';
 }
