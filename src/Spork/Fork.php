@@ -15,7 +15,7 @@ use Spork\Exception\ForkException;
 use Spork\Exception\ProcessControlException;
 use Spork\Util\ExitMessage;
 
-class Fork implements DeferredInterface
+class Fork
 {
     private $pid;
     private $fifo;
