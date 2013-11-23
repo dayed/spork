@@ -81,8 +81,6 @@ class Fork
             $this->fifo->close();
             $this->fifo->cleanup();
 
-            $this->isSuccessful() ? $this->resolve() : $this->reject();
-
             if ($this->debug && (!$this->isSuccessful() || $this->getError())) {
                 throw new ForkException($this->name, $this->pid, $this->getError());
             }
