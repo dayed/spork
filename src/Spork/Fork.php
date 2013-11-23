@@ -11,15 +11,12 @@
 
 namespace Spork;
 
-use Spork\Deferred\Deferred;
-use Spork\Deferred\DeferredInterface;
 use Spork\Exception\ForkException;
 use Spork\Exception\ProcessControlException;
 use Spork\Util\ExitMessage;
 
 class Fork implements DeferredInterface
 {
-    private $defer;
     private $pid;
     private $fifo;
     private $debug;
@@ -29,7 +26,6 @@ class Fork implements DeferredInterface
 
     public function __construct($pid, Fifo $fifo, $debug = false)
     {
-        $this->defer = new Deferred();
         $this->pid   = $pid;
         $this->fifo  = $fifo;
         $this->debug = $debug;
@@ -190,75 +186,5 @@ class Fork implements DeferredInterface
         if (null !== $this->status) {
             return pcntl_wstopsig($this->status);
         }
-    }
-
-    public function getState()
-    {
-        return $this->defer->getState();
-    }
-
-    public function progress($progress)
-    {
-        $this->defer->progress($progress);
-
-        return $this;
-    }
-
-    public function always($always)
-    {
-        $this->defer->always($always);
-
-        return $this;
-    }
-
-    public function done($done)
-    {
-        $this->defer->done($done);
-
-        return $this;
-    }
-
-    public function fail($fail)
-    {
-        $this->defer->fail($fail);
-
-        return $this;
-    }
-
-    public function then($done, $fail = null)
-    {
-        $this->defer->then($done, $fail);
-
-        return $this;
-    }
-
-    public function notify()
-    {
-        $args = func_get_args();
-        array_unshift($args, $this);
-
-        call_user_func_array(array($this->defer, 'notify'), $args);
-
-        return $this;
-    }
-
-    public function resolve()
-    {
-        $args = func_get_args();
-        array_unshift($args, $this);
-
-        call_user_func_array(array($this->defer, 'resolve'), $args);
-
-        return $this;
-    }
-
-    public function reject()
-    {
-        $args = func_get_args();
-        array_unshift($args, $this);
-
-        call_user_func_array(array($this->defer, 'reject'), $args);
-
-        return $this;
     }
 }
