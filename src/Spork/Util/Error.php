@@ -84,17 +84,17 @@ class Error implements \Serializable
     public function toArray()
     {
         return array(
-            $this->class,
-            $this->message,
-            $this->file,
-            $this->line,
-            $this->code,
+            'class' => $this->class,
+            'message' => $this->message,
+            'file' => $this->file,
+            'line' => $this->line,
+            'code' => $this->code,
         );
     }
 
     public function serialize()
     {
-        return serialize($this->toArray());
+        return serialize(array_values($this->toArray()));
     }
 
     public function unserialize($str)
