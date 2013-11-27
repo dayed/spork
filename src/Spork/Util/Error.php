@@ -102,9 +102,4 @@ class Error implements \Serializable
             $this->code
         ) = unserialize($str);
     }
-    
-    public function __toString()
-    {
-        return 'Error (code '.$this->code.') in "' . $this->class . '": "' . $this->message . '" in file "' . $this->file . ':' . $this->line . '"';
-    }
 }
