@@ -1,5 +1,5 @@
 {
-    "name": "kriswallsmith/spork",
+    "name": "phresque/spork",
     "description": "Asynchronous PHP",
     "homepage": "https://github.com/kriswallsmith/spork",
     "type": "library",
