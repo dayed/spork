@@ -80,16 +80,21 @@ class Error implements \Serializable
     {
         $this->code = $code;
     }
-
-    public function serialize()
+    
+    public function toArray()
     {
-        return serialize(array(
+        return array(
             $this->class,
             $this->message,
             $this->file,
             $this->line,
             $this->code,
-        ));
+        );
+    }
+
+    public function serialize()
+    {
+        return serialize($this->toArray());
     }
 
     public function unserialize($str)
