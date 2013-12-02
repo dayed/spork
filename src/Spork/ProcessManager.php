@@ -105,19 +105,7 @@ class ProcessManager
 
             // phone home on shutdown
             register_shutdown_function(function() use(&$fifo, &$message) {
-                $status = null;
-
-                try {
-                    $fifo->send($message, false);
-                } catch (\Exception $e) {
-                    // probably an error serializing the result
-                    $message->setResult(null);
-                    $message->setError(Error::fromException($e));
-
-                    $fifo->send($message, false);
-
-                    exit(2);
-                }
+                $fifo->send($message, false);
             });
 
             // dispatch an event so the system knows it's in a new process
@@ -127,21 +115,15 @@ class ProcessManager
                 ob_start();
             }
 
-            try {
-                $result = call_user_func($callable, $fifo);
+            $result = call_user_func($callable, $fifo);
 
-                $message->setResult($result);
-                $status = is_integer($result) ? $result : 0;
-            } catch (\Exception $e) {
-                $message->setError(Error::fromException($e));
-                $status = 1;
-            }
+            $message->setResult($result);
 
             if (!$this->debug) {
                 $message->setOutput(ob_get_clean());
             }
 
-            exit($status);
+            exit(0);
         }
         
         $this->dispatcher->dispatch(Events::POST_FORK_PARENT);
