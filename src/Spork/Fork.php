@@ -11,23 +11,18 @@
 
 namespace Spork;
 
-use Spork\Exception\ForkException;
 use Spork\Exception\ProcessControlException;
-use Spork\Util\ExitMessage;
 
 class Fork
 {
     private $pid;
-    private $fifo;
     private $debug;
     private $name;
     private $status;
-    private $message;
 
-    public function __construct($pid, Fifo $fifo, $debug = false)
+    public function __construct($pid, $debug = false)
     {
         $this->pid   = $pid;
-        $this->fifo  = $fifo;
         $this->debug = $debug;
         $this->name  = '<anonymous>';
     }
@@ -58,91 +53,20 @@ class Fork
         }
 
         if ($this->pid === $pid) {
-            $this->processWaitStatus($status);
+            $this->status = $status;
         }
 
         return $this;
     }
 
-    /**
-     * Processes a status value retrieved while waiting for this fork to exit.
-     */
-    public function processWaitStatus($status)
-    {
-        if ($this->isExited()) {
-            throw new \LogicException('Cannot set status on an exited fork');
-        }
-
-        $this->status = $status;
-
-        if ($this->isExited()) {
-            $this->receiveMany();
-
-            $this->fifo->close();
-            $this->fifo->cleanup();
-
-            if ($this->debug && (!$this->isSuccessful() || $this->getError())) {
-                throw new ForkException($this->name, $this->pid, $this->getError());
-            }
-        }
-    }
-
-    public function receiveOne()
-    {
-        $message = $this->fifo->receiveOne($success);
-
-        if (!$success) {
-            return;
-        } elseif ($message instanceof ExitMessage) {
-            $this->message = $message;
-        } else {
-            return $message;
-        }
-    }
-
-    public function receiveMany()
-    {
-        $messages = array();
-
-        foreach ($this->fifo->receiveMany() as $message) {
-            if ($message instanceof ExitMessage) {
-                $this->message = $message;
-            } else {
-                $messages[] = $message;
-            }
-        }
-
-        return $messages;
-    }
 
     public function kill($signal = SIGINT)
     {
-        if (false === $this->fifo->signal($signal)) {
+        if (false === posix_kill($this->pid, $signal)) {
             throw new ProcessControlException('Unable to send signal');
         }
 
         return $this;
-    }
-
-    public function getResult()
-    {
-        if ($this->message) {
-            return $this->message->getResult();
-        }
-    }
-
-    public function getOutput()
-    {
-        if ($this->message) {
-            return $this->message->getOutput();
-        }
-    }
-
-    public function getError()
-    {
-        if ($this->message) {
-            return $this->message->getError();
-        }
     }
 
     public function isSuccessful()

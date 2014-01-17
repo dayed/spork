@@ -28,74 +28,25 @@ class ProcessManagerTest extends \PHPUnit_Framework_TestCase
         unset($this->manager);
     }
 
-    public function testDoneCallbacks()
+    public function testSuccess()
     {
-        $success = null;
-
         $fork = $this->manager->fork(function() {
-            echo 'output';
-            return 'result';
-        })->done(function() use(& $success) {
-            $success = true;
-        })->fail(function() use(& $success) {
-            $success = false;
+            
         });
 
         $this->manager->wait();
 
-        $this->assertTrue($success);
-        $this->assertEquals('output', $fork->getOutput());
-        $this->assertEquals('result', $fork->getResult());
+        $this->assertTrue($fork->isSuccessful());
     }
 
-    public function testFailCallbacks()
+    public function testFail()
     {
-        $success = null;
-
         $fork = $this->manager->fork(function() {
-            throw new \Exception('child error');
-        })->done(function() use(& $success) {
-            $success = true;
-        })->fail(function() use(& $success) {
-            $success = false;
+            throw new \Exception('Hey, it\'s an error');
         });
 
         $this->manager->wait();
 
-        $this->assertFalse($success);
-        $this->assertNotEmpty($fork->getError());
-    }
-
-    public function testObjectReturn()
-    {
-        $fork = $this->manager->fork(function() {
-            return new Unserializable();
-        });
-
-        $this->manager->wait();
-
-        $this->assertNull($fork->getResult());
         $this->assertFalse($fork->isSuccessful());
-    }
-
-    public function testBatchProcessing()
-    {
-        $expected = range(100, 109);
-
-        $fork = $this->manager->process($expected, function($item) {
-            return $item;
-        });
-
-        $this->manager->wait();
-
-        $this->assertEquals($expected, $fork->getResult());
-    }
-}
-
-class Unserializable
-{
-    public function __sleep()
-    {
-        throw new \Exception('Hey, don\'t serialize me!');
     }
 }

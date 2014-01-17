@@ -13,14 +13,11 @@ namespace Spork;
 
 use Spork\Batch\BatchJob;
 use Spork\Batch\Strategy\StrategyInterface;
-use Spork\Deferred\DeferredInterface;
 use Spork\EventDispatcher\EventDispatcher;
 use Spork\EventDispatcher\EventDispatcherInterface;
 use Spork\EventDispatcher\Events;
 use Spork\Exception\ProcessControlException;
 use Spork\Exception\UnexpectedTypeException;
-use Spork\Util\Error;
-use Spork\Util\ExitMessage;
 
 class ProcessManager
 {
@@ -28,7 +25,6 @@ class ProcessManager
     private $debug;
     private $zombieOkay;
     private $forks;
-    private $signal;
 
     public function __construct(EventDispatcherInterface $dispatcher = null, $debug = false)
     {
@@ -99,54 +95,17 @@ class ProcessManager
             // reset the list of child processes
             $this->forks = array();
 
-            // setup the fifo (blocks until parent connects)
-            $fifo = new Fifo(null, $this->signal);
-            $message = new ExitMessage();
-
-            // phone home on shutdown
-            register_shutdown_function(function() use(&$fifo, &$message) {
-                $fifo->send($message, false);
-            });
-
             // dispatch an event so the system knows it's in a new process
             $this->dispatcher->dispatch(Events::POST_FORK);
 
-            if (!$this->debug) {
-                ob_start();
-            }
-
-            $result = call_user_func($callable, $fifo);
-
-            $message->setResult($result);
-
-            if (!$this->debug) {
-                $message->setOutput(ob_get_clean());
-            }
-
+            call_user_func($callable);
+            
             exit(0);
         }
         
         $this->dispatcher->dispatch(Events::POST_FORK_PARENT);
 
-        // connect to the fifo
-        $fifo = new Fifo($pid);
-
-        return $this->forks[$pid] = new Fork($pid, $fifo, $this->debug);
-    }
-
-    public function monitor($signal = SIGUSR1)
-    {
-        $this->signal = $signal;
-        $this->dispatcher->addSignalListener($signal, array($this, 'check'));
-    }
-
-    public function check()
-    {
-        foreach ($this->forks as $fork) {
-            foreach ($fork->receiveMany() as $message) {
-                $fork->notify($message);
-            }
-        }
+        return $this->forks[$pid] = new Fork($pid, $this->debug);
     }
 
     public function wait($hang = true)
