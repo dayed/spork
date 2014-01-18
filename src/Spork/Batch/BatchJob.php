@@ -91,11 +91,6 @@ class BatchJob
         // block until all forks have exited
         $this->manager->wait();
 
-        $results = array();
-        foreach ($forks as $fork) {
-            $results = array_merge($results, $fork->getResult());
-        }
-
-        return $results;
+        return $forks;
     }
 }

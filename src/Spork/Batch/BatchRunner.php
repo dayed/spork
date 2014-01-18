@@ -39,7 +39,7 @@ class BatchRunner
         $this->callback = $callback;
     }
 
-    public function __invoke(Fifo $fifo)
+    public function __invoke()
     {
         // lazy batch...
         if ($this->batch instanceof \Closure) {
@@ -48,7 +48,7 @@ class BatchRunner
 
         $results = array();
         foreach ($this->batch as $index => $item) {
-            $results[$index] = call_user_func($this->callback, $item, $index, $this->batch, $fifo);
+            $results[$index] = call_user_func($this->callback, $item, $index, $this->batch);
         }
 
         return $results;
