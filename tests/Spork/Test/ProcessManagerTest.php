@@ -31,7 +31,7 @@ class ProcessManagerTest extends \PHPUnit_Framework_TestCase
     public function testSuccess()
     {
         $fork = $this->manager->fork(function() {
-            
+            echo 'Forked ' . getmypid() . ' at ' . strftime('%F %T');
         });
 
         $this->manager->wait();
