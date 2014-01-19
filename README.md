@@ -1,4 +1,4 @@
-[![Build Status](https://secure.travis-ci.org/kriswallsmith/spork.png?branch=master)](http://travis-ci.org/kriswallsmith/spork)
+Original library: [https://github.com/kriswallsmith/spork](Kriswallsmith/spork)
 
 Spork: PHP on a Fork
 --------------------
