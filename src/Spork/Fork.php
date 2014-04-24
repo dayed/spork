@@ -68,6 +68,11 @@ class Fork
 
         return $this;
     }
+    
+    public function isRunning()
+    {
+        return false !== posix_kill($this->pid, SIG_DFL);
+    }
 
     public function isSuccessful()
     {
