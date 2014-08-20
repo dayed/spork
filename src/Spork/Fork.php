@@ -42,19 +42,13 @@ class Fork
         return $this->pid;
     }
 
-    public function wait($hang = true, $safe = false)
+    public function wait($hang = true)
     {
         if ($this->isExited()) {
             return $this;
         }
 
         if (-1 === $pid = pcntl_waitpid($this->pid, $status, ($hang ? 0 : WNOHANG) | WUNTRACED)) {
-            
-            if($safe)
-            {
-                return false;
-            }
-            
             throw new ProcessControlException('Error while waiting for process '.$this->pid);
         }
 
