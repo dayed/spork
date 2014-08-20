@@ -111,7 +111,7 @@ class ProcessManager
     public function wait($hang = true)
     {
         foreach ($this->forks as $fork) {
-            $fork->wait($hang);
+            $fork->wait($hang, true);
         }
     }
 
