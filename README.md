@@ -2,6 +2,7 @@ Original library: [Kriswallsmith/spork](https://github.com/kriswallsmith/spork "
 
 Spork: PHP on a Fork
 --------------------
+[![Build Status](https://travis-ci.org/phresque/spork.svg)](https://travis-ci.org/phresque/spork)
 
 The original library was written by Kriswallsmith but it has been stripped down for use in the phresque project.
 
