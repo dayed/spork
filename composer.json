@@ -1,7 +1,7 @@
 {
     "name": "phresque/spork",
     "description": "Asynchronous PHP",
-    "homepage": "https://github.com/kriswallsmith/spork",
+    "homepage": "https://github.com/phresque/spork",
     "type": "library",
     "license": "MIT",
     "authors": [
@@ -17,7 +17,12 @@
         "ext-posix": "*",
         "symfony/event-dispatcher": "*"
     },
+    "require-dev" : {
+        "satooshi/php-coveralls": "dev-master"
+    }
     "autoload": {
-        "psr-0": { "Spork": "src/" }
+        "psr-0": { 
+            "Spork": "src/"
+        }
     }
 }
