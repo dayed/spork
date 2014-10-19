@@ -16,25 +16,11 @@ use Spork\Exception\ProcessControlException;
 class Fork
 {
     private $pid;
-    private $debug;
-    private $name;
     private $status;
 
-    public function __construct($pid, $debug = false)
+    public function __construct($pid)
     {
         $this->pid   = $pid;
-        $this->debug = $debug;
-        $this->name  = '<anonymous>';
-    }
-
-    /**
-     * Assign a name to the current fork (useful for debugging).
-     */
-    public function setName($name)
-    {
-        $this->name = $name;
-
-        return $this;
     }
 
     public function getPid()

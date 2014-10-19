@@ -13,8 +13,7 @@ namespace Spork;
 
 use Spork\Batch\BatchJob;
 use Spork\Batch\Strategy\StrategyInterface;
-use Spork\EventDispatcher\EventDispatcher;
-use Spork\EventDispatcher\EventDispatcherInterface;
+use Symfony\Component\EventDispatcher\EventDispatcher;
 use Spork\EventDispatcher\Events;
 use Spork\Exception\ProcessControlException;
 use Spork\Exception\UnexpectedTypeException;
@@ -22,14 +21,12 @@ use Spork\Exception\UnexpectedTypeException;
 class ProcessManager
 {
     private $dispatcher;
-    private $debug;
     private $zombieOkay;
     private $forks;
 
-    public function __construct(EventDispatcherInterface $dispatcher = null, $debug = false)
+    public function __construct(EventDispatcher $dispatcher = null)
     {
         $this->dispatcher = $dispatcher ?: new EventDispatcher();
-        $this->debug = $debug;
         $this->zombieOkay = false;
         $this->forks = array();
     }
@@ -44,20 +41,6 @@ class ProcessManager
     public function getEventDispatcher()
     {
         return $this->dispatcher;
-    }
-
-    public function addListener($eventName, $listener, $priority = 0)
-    {
-        if (is_integer($eventName)) {
-            $this->dispatcher->addSignalListener($eventName, $listener, $priority);
-        } else {
-            $this->dispatcher->addListener($eventName, $listener, $priority);
-        }
-    }
-
-    public function setDebug($debug)
-    {
-        $this->debug = $debug;
     }
 
     public function zombieOkay($zombieOkay = true)
@@ -105,7 +88,7 @@ class ProcessManager
         
         $this->dispatcher->dispatch(Events::POST_FORK_PARENT);
 
-        return $this->forks[$pid] = new Fork($pid, $this->debug);
+        return $this->forks[$pid] = new Fork($pid);
     }
 
     public function wait($hang = true)
